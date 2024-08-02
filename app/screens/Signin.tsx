@@ -19,26 +19,60 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 const AuthScreen = ({ email, setEmail, password, setPassword, isLogin, setIsLogin, handleAuthentication }) => {
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  const validateInput = () => {
+    setEmailError('');
+    setPasswordError('');
+
+    if (!email) {
+      setEmailError('Email is required.');
+    } else if (!email.includes('@')) {
+      setEmailError('Invalid email address.');
+    }
+
+    if (!password) {
+      setPasswordError('Password is required.');
+    } else if (password.length < 6) {
+      setPasswordError('Password should be at least 6 characters.');
+    }
+
+    return !(emailError || passwordError);
+  };
+
+  const handlePress = () => {
+    if (validateInput()) {
+      handleAuthentication();
+    }
+  };
+
   return (
     <View style={styles.authContainer}>
-       <Text style={styles.title}>{isLogin ? 'Sign In' : 'Sign Up'}</Text>
-       <TextInput
-        style={styles.input}
+      <Text style={styles.title}>{isLogin ? 'Sign In' : 'Sign Up'}</Text>
+
+      <TextInput
+        style={[styles.input, emailError ? styles.errorInput : null]}
         value={email}
         onChangeText={setEmail}
         placeholder="Email"
         autoCapitalize="none"
       />
+      {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+
       <TextInput
-        style={styles.input}
+        style={[styles.input, passwordError ? styles.errorInput : null]}
         value={password}
         onChangeText={setPassword}
         placeholder="Password"
         secureTextEntry
       />
+      {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+
       <View style={styles.buttonContainer}>
-        <Button title={isLogin ? 'Sign In' : 'Sign Up'} onPress={handleAuthentication} color="#3498db" />
+        <Button title={isLogin ? 'Sign In' : 'Sign Up'} onPress={handlePress} color="#3498db" />
       </View>
+
       <View style={styles.bottomContainer}>
         <Text style={styles.toggleText} onPress={() => setIsLogin(!isLogin)}>
           {isLogin ? 'Need an account? Sign Up' : 'Already have an account? Sign In'}
@@ -47,6 +81,7 @@ const AuthScreen = ({ email, setEmail, password, setPassword, isLogin, setIsLogi
     </View>
   );
 }
+
 
 const AuthenticatedScreen = ({ user, handleAuthentication }) => {
   return (
@@ -73,6 +108,13 @@ const App = () => {
 
   const handleAuthentication = async () => {
     try {
+      // Basic input validation
+      if (!email || !password) {
+        console.error('Email and password are required.');
+        return;
+      }
+  
+      // Perform authentication or sign out
       if (user) {
         // Sign out
         await signOut(auth);
@@ -88,9 +130,33 @@ const App = () => {
         }
       }
     } catch (error) {
-      console.error('Authentication error:', error.message);
+      // Handle different types of authentication errors
+      switch (error.code) {
+        case 'auth/invalid-email':
+          console.error('Invalid email address.');
+          break;
+        case 'auth/weak-password':
+          console.error('Password should be at least 6 characters.');
+          break;
+        case 'auth/email-already-in-use':
+          console.error('Email address is already in use.');
+          break;
+        case 'auth/user-not-found':
+          console.error('User not found.');
+          break;
+        case 'auth/wrong-password':
+          console.error('Wrong password.');
+          break;
+        case 'auth/invalid-credential':
+          console.error('Invalid credentials provided.');
+          break;
+        default:
+          console.error('Authentication error:', error.message);
+          break;
+      }
     }
   };
+  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, Text } from 'react-native';
-import { getMembers } from '../utils/database';
 import { FAB } from 'react-native-paper';
 import { router } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
+import { getMembers } from '../utils/database';
 
 // Define the Member type
 interface Member {
@@ -23,11 +23,8 @@ export default function Tab() {
       };
       fetchMembers();
     }
-    
-    
-    
   }, [isFocused]);
-  
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -40,9 +37,14 @@ export default function Tab() {
         )}
       />
       <FAB
-        style={styles.fab}
+        style={styles.addFab}
         icon="plus"
-        onPress={() => router.push("../screens/addMembers") }
+        onPress={() => router.push("../screens/addMembers")}
+      />
+      <FAB
+        style={styles.loginFab}
+        icon="account"
+        onPress={() => router.push("../screens/Signin")}
       />
     </View>
   );
@@ -58,11 +60,18 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
-  fab: {
+  addFab: {
     position: 'absolute',
     margin: 16,
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#f0f0f0',
+    right: 16,
+    bottom: 80, // Adjusted to place above the login FAB
+    backgroundColor: 'white', // Color of the FAB
+  },
+  loginFab: {
+    position: 'absolute',
+    margin: 16,
+    right: 16,
+    bottom: 16, // Position at the bottom right corner
+    backgroundColor: '#03dac6', // Color of the FAB
   },
 });

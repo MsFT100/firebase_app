@@ -19,7 +19,7 @@ const AddMembersScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Add Members</Text>
+      <Text style={styles.title}>Members</Text>
       <TextInput
         label="Enter member name"
         value={name}
