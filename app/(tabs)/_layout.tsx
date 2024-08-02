@@ -1,7 +1,15 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
+import { useEffect } from 'react';
+import { clearTasks, createTables } from '../utils/database';
+import { Alert } from 'react-native/Libraries/Alert/Alert';
 
 export default function TabLayout() {
+
+  
+  createTables();
+  
+  
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: 'blue' }}>
         <Tabs.Screen

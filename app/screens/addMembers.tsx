@@ -1,14 +1,20 @@
-// src/app/addMembers.tsx
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { Text, TextInput, Button } from 'react-native-paper';
+import { addMember } from '../utils/database';
 
 const AddMembersScreen = () => {
   const [name, setName] = useState('');
 
   const handleAddMember = () => {
-    alert(`Member ${name} added!`);
-    setName('');
+    if (name.trim()) {
+      addMember(name, (result) => {
+        Alert.alert('Success', `Member ${name} added!`);
+        setName('');
+      });
+    } else {
+      Alert.alert('Error', 'Please enter a valid name');
+    }
   };
 
   return (
